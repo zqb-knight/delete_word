@@ -14,83 +14,115 @@ Login::~Login()
 }
 
 //登录
+
 void Login::on_pushButton_login_clicked()
 {
     //从文本框中获取输入和账户和密码
-    QString account;
-    QString password;
-    std::string account_t;
-    std::string password_t;
-    account = ui->lineEdit_account->text();
-    password = ui->lineEdit_password->text();
+    int role = ui->comboBox->currentIndex();
+    QString account = ui->lineEdit_account->text();;
+    QString password = ui->lineEdit_password->text();
+    int role_t;
+    QString account_t;
+    QString password_t;
+    QMessageBox msbox;
     qDebug() << "输入的账户为：" << account << endl;
     qDebug() << "输入的密码为：" << password << endl;
 
-    //判断账号是否存在
-    std::ifstream in;
-    in.open("account.txt");
-    while(!in.eof())
+    QSqlQuery sql_query;
+    QString select_sql = "select Account, Password, Role from account";
+    if(!sql_query.exec(select_sql))
     {
-        in >> account_t;
-        in >> password_t;
-        if(account_t == account.toStdString())
+        qDebug()<<sql_query.lastError();
+    }
+    else
+    {
+        while(sql_query.next())
         {
-            //判断密码是否正确
-            if(password_t == password.toStdString())
+            account_t = sql_query.value(0).toString();
+            password_t = sql_query.value(1).toString();
+            role_t = sql_query.value(2).toInt();
+            if(account == account_t && role == role_t)
             {
-               qDebug() << "登录成功";
-               g.show();
-               return;
-            }
-            else
-            {
-                qDebug() << "密码错误";
-                QMessageBox msbox;
+                if(password == password_t)
+                {
+                    qDebug() << "登录成功";
+                    close();
+                    return;
+                }
                 msbox.setText("密码错误");
                 msbox.exec();
+                qDebug() << "密码错误";
+                return;
+            }
+        }
+        msbox.setText("账户不存在，请重新输入");
+        msbox.exec();
+        qDebug() << "账户不存在,请重新输入";
+        return;
+
+    }
+}
+
+
+//注册
+void Login::on_pushButton_register_clicked()
+{
+    //从文本框中获取输入和账户和密码
+    int role = ui->comboBox->currentIndex();
+    QString account = ui->lineEdit_account->text();;
+    QString password = ui->lineEdit_password->text();
+    int role_t;
+    QString account_t;
+    QString password_t;
+    qDebug() << "输入的账户为：" << account << endl;
+    qDebug() << "输入的密码为：" << password << endl;
+
+    //判断账户是否已经存在
+    QSqlQuery sql_query;
+    QString select_sql = "select Account, Password, Role from account";
+    if(!sql_query.exec(select_sql))
+    {
+        qDebug()<<sql_query.lastError();
+    }
+    else
+    {
+        while(sql_query.next())
+        {
+            account_t = sql_query.value(0).toString();
+            password_t = sql_query.value(1).toString();
+            role_t = sql_query.value(3).toInt();
+            if(account == account_t && password == password_t && role == role_t)
+            {
+                QMessageBox msbox;
+                msbox.setText("账户已存在");
+                msbox.exec();
+                qDebug() << "账户已存在,请更换账户名称";
                 return;
             }
         }
     }
 
-
-}
-
-//注册
-void Login::on_pushButton_register_clicked()
-{
-    QString account;
-    QString password;
-    std::string account_t;
-    std::string password_t;
-    account = ui->lineEdit_account->text();
-    password = ui->lineEdit_password->text();
-    qDebug() << "输入的账户为：" << account << endl;
-    qDebug() << "输入的密码为：" << password << endl;
-
-    //判断账户是否已经存在
-    std::ifstream in;
-    in.open("account.txt");
-    while(!in.eof())
+    QString insert_sql = "insert into account values (?, ?, ?, ?, ?, ?)";
+    sql_query.prepare(insert_sql);
+    sql_query.addBindValue(account);
+    sql_query.addBindValue(password);
+    sql_query.addBindValue(role);
+    sql_query.addBindValue(0);
+    sql_query.addBindValue(0);
+    sql_query.addBindValue(0);
+    if(!sql_query.exec())
     {
-        in >> account_t;
-        in >> password_t;
-        if(account_t == account.toStdString())
-        {
-            QMessageBox msbox;
-            msbox.setText("账户已存在");
-            msbox.exec();
-            qDebug() << "账户已存在,请更换账户名称";
-            return;
-        }
+        qDebug() << sql_query.lastError();
     }
-    //添加新的账号与密码
-    std::ofstream write;
-    write.open("account.txt", std::ios::app);
-    write << "\n" << account.toStdString() << " ";
-    write << password.toStdString();
+    else
+    {
+        qDebug() << "inserted succeed!";
+    }
     QMessageBox msbox;
     msbox.setText("账户注册成功");
     msbox.exec();
     qDebug() << "账户注册成功";
+    return;
 }
+
+

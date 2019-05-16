@@ -3,7 +3,7 @@
 # Project created by QtCreator 2019-04-25T21:43:54
 #
 #-------------------------------------------------
-
+QT       += sql
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -31,7 +31,9 @@ SOURCES += \
     player.cpp \
     questioner.cpp \
     game.cpp \
-    dialog.cpp
+    dialog.cpp \
+    rank.cpp \
+    list.cpp
 
 HEADERS += \
         login.h \
@@ -39,12 +41,16 @@ HEADERS += \
     player.h \
     questioner.h \
     game.h \
-    dialog.h
+    dialog.h \
+    rank.h \
+    list.h
 
 FORMS += \
         login.ui \
     game.ui \
-    dialog.ui
+    dialog.ui \
+    rank.ui \
+    list.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
