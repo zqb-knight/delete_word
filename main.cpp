@@ -4,15 +4,17 @@
 #include <QSqlQuery>
 #include "game.h"
 
-
+Player player;         //玩家
+Questioner questioner; //出题者
+int model;     //此时的模式，0代表玩家模式，1代表出题模式，-1代表未登录模式
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-    //打开游戏界面
     Game g;
+    //打开游戏界面
+
     g.show();
 
 /*

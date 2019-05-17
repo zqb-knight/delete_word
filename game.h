@@ -10,7 +10,9 @@
 #include "rank.h"
 #include "list.h"
 
+
 static QSqlDatabase database;   //数据库
+
 
 namespace Ui {
 class Game;
@@ -23,11 +25,13 @@ class Game : public QWidget
 public:
     explicit Game(QWidget *parent = nullptr);
     ~Game();
-
+    void update_user_info();
     //实现窗口可整体拖动，重写鼠标事件函数
     virtual void mouseMoveEvent ( QMouseEvent * event );
     virtual void mousePressEvent ( QMouseEvent * event );
     virtual void mouseReleaseEvent ( QMouseEvent * event );
+
+
 
 private slots:
     void on_pushButton_clicked();
@@ -45,8 +49,9 @@ private:
     Ui::Game *ui;
 
     Login login;    //登录窗口
-    List list;
-    Rank rank;
+    List list;      //用户查询窗口
+    Rank rank;      //排行榜窗口
+
 
 
     //实现窗口可整体拖动，重写鼠标事件函数

@@ -1,6 +1,8 @@
 #include "login.h"
 #include "ui_login.h"
 
+
+
 Login::Login(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Login)
@@ -21,7 +23,7 @@ void Login::on_pushButton_login_clicked()
     int role = ui->comboBox->currentIndex();
     QString account = ui->lineEdit_account->text();;
     QString password = ui->lineEdit_password->text();
-    int role_t;
+    int role_t, level_t, ex_t, class_t;
     QString account_t;
     QString password_t;
     QMessageBox msbox;
@@ -29,7 +31,7 @@ void Login::on_pushButton_login_clicked()
     qDebug() << "输入的密码为：" << password << endl;
 
     QSqlQuery sql_query;
-    QString select_sql = "select Account, Password, Role from account";
+    QString select_sql = "select Account, Password, Role, Level, Ex, Class from account";
     if(!sql_query.exec(select_sql))
     {
         qDebug()<<sql_query.lastError();
@@ -41,12 +43,23 @@ void Login::on_pushButton_login_clicked()
             account_t = sql_query.value(0).toString();
             password_t = sql_query.value(1).toString();
             role_t = sql_query.value(2).toInt();
+            level_t = sql_query.value(3).toInt();
+            ex_t = sql_query.value(4).toInt();
+            class_t = sql_query.value(5).toInt();
             if(account == account_t && role == role_t)
             {
                 if(password == password_t)
                 {
                     qDebug() << "登录成功";
                     close();
+                    model = role;
+                    if(model == 0)
+                    {
+                        player.name = account_t;
+                        player.level = level_t;
+                        player.ex = ex_t;
+                        player.clas = class_t;
+                    }
                     return;
                 }
                 msbox.setText("密码错误");
@@ -104,6 +117,7 @@ void Login::on_pushButton_register_clicked()
 
     QString insert_sql = "insert into account values (?, ?, ?, ?, ?, ?)";
     sql_query.prepare(insert_sql);
+
     sql_query.addBindValue(account);
     sql_query.addBindValue(password);
     sql_query.addBindValue(role);

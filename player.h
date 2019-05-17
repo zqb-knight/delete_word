@@ -7,9 +7,9 @@ class Player : public Person
 {
 public:
     Player();
+    int level;   //关卡
+
 private:
-    int stage;   //关卡
-    int exp;     //经验
 
 };
 

@@ -2,15 +2,17 @@
 #define LOGIN_H
 
 #include <QWidget>
-//#include <QDialog>
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include "player.h"
+#include "questioner.h"
 
-//extern QSqlDatabase database;   //数据库
-//extern QSqlQuery sql_query;
+extern Player player;         //玩家
+extern Questioner questioner; //出题者
+extern int model;     //此时的模式，0代表玩家模式，1代表出题模式，-1代表未登录模式
 
 namespace Ui {
 class Login;
@@ -23,6 +25,7 @@ class Login : public QWidget
 public:
     explicit Login(QWidget *parent = nullptr);
     ~Login();
+
 private slots:
 
     void on_pushButton_login_clicked();
@@ -31,8 +34,7 @@ private slots:
 
 private:
     Ui::Login *ui;
-    //Game g;
-    //Dialog log;
+
 };
 
 #endif // LOGIN_H

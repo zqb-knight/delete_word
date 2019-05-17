@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
+    <width>601</width>
     <height>640</height>
    </rect>
   </property>
@@ -29,9 +29,9 @@
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>50</x>
      <y>80</y>
-     <width>391</width>
+     <width>511</width>
      <height>441</height>
     </rect>
    </property>
@@ -45,6 +45,87 @@
      <string>闯关数</string>
     </property>
    </column>
+   <column>
+    <property name="text">
+     <string>经验</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>等级</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QComboBox" name="model_comboBox">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>50</y>
+     <width>141</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>按闯关(出题)数</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>按等级</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>按经验</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>50</y>
+     <width>72</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>排名方式</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="role_comboBox">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>50</y>
+     <width>87</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>玩家</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>出题者</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>50</y>
+     <width>72</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>排名内容</string>
+   </property>
   </widget>
  </widget>
  <resources/>

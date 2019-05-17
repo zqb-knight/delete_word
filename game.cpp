@@ -1,10 +1,19 @@
 #include "game.h"
 #include "ui_game.h"
 
+extern Login login;    //登录窗口
+extern List list;      //用户查询窗口
+extern Rank rank;      //排行榜窗口
+extern QSqlDatabase database;   //数据库
+extern Player player;         //玩家
+extern Questioner questioner; //出题者
+extern int model;     //此时的模式，0代表玩家模式，1代表出题模式，-1代表未登录模式
+
 Game::Game(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Game)
 {
+    model = -1;
     ui->setupUi(this);
     //设置窗口大小
     setFixedSize(1280, 720);
@@ -33,7 +42,7 @@ Game::Game(QWidget *parent) :
         // do something
     }
     QSqlQuery sql_query(database);
-    QString create_sql = "create table if not exists account (Account varchar(15), Password varchar(15), Role int, Level int, Ex int, Class int)";
+    QString create_sql = "create table if not exists player (Account varchar(15), Password varchar(15), Role int, Level int, Ex int, Class int)";
     sql_query.prepare(create_sql);
     if(!sql_query.exec())
     {
@@ -43,14 +52,14 @@ Game::Game(QWidget *parent) :
     {
         qDebug() << "Table created!";
     }
-//    QString insert_sql = "insert or ignore into account values (?, ?, ?, ?, ?, ?)";
+//    QString insert_sql = "insert into account values (?, ?, ?, ?, ?, ?)";
 //    sql_query.prepare(insert_sql);
-//    sql_query.addBindValue("admin");
-//    sql_query.addBindValue("admin");
+//    sql_query.addBindValue("admin5");
+//    sql_query.addBindValue("admin5");
 //    sql_query.addBindValue(1);
-//    sql_query.addBindValue(100);
-//    sql_query.addBindValue(10);
-//    sql_query.addBindValue(100);
+//    sql_query.addBindValue(9);
+//    sql_query.addBindValue(4);
+//    sql_query.addBindValue(9);
 //    if(!sql_query.exec())
 //    {
 //        qDebug() << sql_query.lastError();
@@ -111,7 +120,17 @@ void Game::on_pushButton_clicked()
 
 void Game::on_login_PB_clicked()
 {
-    login.show();
+    if(model == -1){
+        login.show();
+
+    }
+    else{
+        QMessageBox msbox;
+        msbox.setText("同时只允许一人登录，请注销后再登录");
+        msbox.exec();
+        update_user_info();
+        return;
+    }
 }
 
 
@@ -120,7 +139,7 @@ void Game::on_list_PB_clicked()
 {
 
     list.show();
-    list.add_data();
+    list.List_init();
 }
 
 void Game::on_pushButton_2_clicked()
@@ -140,5 +159,12 @@ void Game::on_pushButton_2_clicked()
 void Game::on_rank_PB_clicked()
 {
     rank.show();
-    rank.ranktable();
+    rank.Rank_init();
+}
+
+void Game::update_user_info()
+{
+    ui->name_label->setText(player.name);
+    ui->class_lebel->setText(QString::number(player.clas));
+    ui->ex_label->setText(QString::number(player.ex));
 }

@@ -18,7 +18,15 @@ class Rank : public QWidget
 public:
     explicit Rank(QWidget *parent = nullptr);
     ~Rank();
-    void ranktable();
+    void Rank_init();
+    void update_table(int role, int index);
+
+private slots:
+
+
+    void on_model_comboBox_currentIndexChanged(int index);
+
+    void on_role_comboBox_currentIndexChanged(int index);
 
 private:
     Ui::Rank *ui;

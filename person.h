@@ -7,9 +7,11 @@ class Person
 {
 public:
     Person();
-private:
     QString name;    //名字
-    int level;       //等级
+    int clas;       //等级
+    int ex;     //经验
+private:
+
 
 };
 
