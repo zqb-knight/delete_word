@@ -5,18 +5,24 @@ Game::Game(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Game)
 {
-    login = new(Login);
+    all_time = 0; //用于防沉迷
+    total_timer->start(1000);
     model = -1;
+    login = new(Login);
+    //初始设置为未登录
     ui->setupUi(this);
     //设置窗口大小
     setFixedSize(1280, 720);
+    //设置游戏背景
+    QPixmap pixmap = QPixmap(":/back.png").scaled(this->size());
+    QPalette palette(this->palette());
+    palette.setBrush(QPalette::Background, QBrush(pixmap));
+    this->setPalette(palette);
     // 不显示标题栏(亦无边框)
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    //setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    game_init();
 
-    update_user_info();
-    // 背景透明(全自画)
-    //setAttribute(Qt::WA_TranslucentBackground);
-
+    //创建数据库
     if (QSqlDatabase::contains("qt_sql_default_connection"))
     {
         database = QSqlDatabase::database("qt_sql_default_connection");
@@ -32,10 +38,7 @@ Game::Game(QWidget *parent) :
     {
         qDebug() << "Error: Failed to connect database." << database.lastError();
     }
-    else
-    {
-        // do something
-    }
+
     QSqlQuery sql_query(database);
     QString create_sql = "create table if not exists account (Account varchar(15), Password varchar(15), Role int, Level int, Ex int, Class int)";
     sql_query.prepare(create_sql);
@@ -48,7 +51,7 @@ Game::Game(QWidget *parent) :
         qDebug() << "Table created!";
     }
 
-
+    //创建表格
     create_sql = "create table if not exists question_A (word varchar(15))";
     sql_query.prepare(create_sql);
     if(!sql_query.exec())
@@ -79,67 +82,15 @@ Game::Game(QWidget *parent) :
     {
         qDebug() << "question_Table created!";
     }
+
+    //定时器connect函数
     connect(timer, SIGNAL(timeout()), this, SLOT(handleTimeout()));
     connect(ready_timer, SIGNAL(timeout()), this, SLOT(ready_handleTimeout()));
-
-    game_init();
-
-    //ui->threes_label->setMovie(three_movie);
-    //setStyleSheet(tr("background-image: url(:/back.png)"));
-    QPixmap pixmap = QPixmap(":/back.png").scaled(this->size());
-
-    QPalette palette(this->palette());
-
-    palette.setBrush(QPalette::Background, QBrush(pixmap));
-
-    this->setPalette(palette);
-
-
+    connect(game_timer, SIGNAL(timeout()), this, SLOT(game_handleTimeout()));
+    connect(total_timer, SIGNAL(timeout()), this, SLOT(total_handleTimeout()));
 }
 
-Game::~Game()
-{
-    delete ui;
-}
-
-void Game::mousePressEvent(QMouseEvent *event)
-{
-    // 只响应左键
-    if (event->button() == Qt::LeftButton)
-    {
-        m_dragging = true;
-        m_startPosition = event->globalPos();
-        m_framePosition = frameGeometry().topLeft();
-    }
-
-    QWidget::mousePressEvent(event);
-}
-
-void Game::mouseMoveEvent(QMouseEvent *event)
-{
-    // 只响应左键
-    if (event->buttons() & Qt::LeftButton)
-    {
-        if(m_dragging)
-        {
-            // delta 相对偏移量,
-            QPoint delta = event->globalPos() - m_startPosition;
-
-            // 新位置：窗体原始位置  + 偏移量
-            move(m_framePosition + delta);
-        }
-    }
-
-    QWidget::mouseMoveEvent(event);
-}
-
-void Game::mouseReleaseEvent ( QMouseEvent * event )
-{
-    // 结束dragging
-    m_dragging = false;
-    QWidget::mouseReleaseEvent(event);
-}
-
+//退出游戏
 void Game::on_pushButton_clicked()
 {
     close();
@@ -166,11 +117,9 @@ void Game::on_login_PB_clicked()
 //显示用户信息列表
 void Game::on_list_PB_clicked()
 {
-
     list.show();
     list.List_init();
 }
-
 
 
 //显示排行榜
@@ -184,7 +133,7 @@ void Game::on_rank_PB_clicked()
 void Game::update_user_info()
 {
     //面板信息更新
-    questioner.clas = questioner.ex / 10;
+    questioner.clas = questioner.ex / 15;
     player.clas = player.ex / 10;
     QSqlQuery sql_query(database);
     QString update_sql = "UPDATE account SET Level = ?, Ex = ?, Class = ? WHERE Account = ?";
@@ -229,14 +178,14 @@ void Game::update_user_info()
     }
 }
 
-void Game::on_update_pushButton_clicked()
-{
-    update_user_info();
-}
+
 
 //未点开始游戏前的界面，显示开始游戏按钮和图片
 void Game::game_init()
 {
+
+    i = 0;
+    t = 0;
     ui->start_pushButton->show();
     ui->re_pushButton->hide();
     ui->stage_L_label->hide();
@@ -253,6 +202,11 @@ void Game::game_init()
     ui->question_lineEdit->hide();
     ui->question_commit_pushButton->hide();
     ui->hard_label->hide();
+    ui->stage_L_label_2->hide();
+    ui->stage_M_label_2->hide();
+    ui->stage_r_label_2->hide();
+    ui->ready_label->hide();
+    ui->tip_label->hide();
 }
 
 //选关界面
@@ -279,31 +233,40 @@ void Game::on_start_pushButton_clicked()
         ui->re_pushButton->show();
         ui->select_comboBox->show();
         ui->question_lineEdit->show();
+        ui->question_lineEdit->clear();
         ui->question_commit_pushButton->show();
         ui->hard_label->show();
     }
 }
-
-void Game::on_unlogin_pushButton_clicked()
-{
-    model = -1;
-    update_user_info();
-}
-
 
 //正式游戏界面
 void Game::on_stage_comboBox_currentIndexChanged(int index)
 {
     if(index <= player.level)
     {
+
         current_stage = index;
+        ui->word_input_line->clear();
+        ui->stage_M_label_2->setText(QString::number(current_stage));
         ui->next_pushButton->hide();
         ui->title_label->hide();
         ui->stage_L_label->hide();
         ui->stage_r_label->hide();
         ui->stage_comboBox->hide();
+        ui->stage_L_label_2->show();
+        ui->stage_M_label_2->show();
+        ui->stage_r_label_2->show();
+        ui->ready_label->show();
+        t = 0;
         QSqlQuery sql_query(database);
-        QString select_sql = "select word from question_A order by random() limit 1";
+        QString select_sql;
+        //不同关卡难度设置不同
+        if(current_stage <= 3)
+            select_sql = "select word from question_A order by random() limit 1";
+        else if(current_stage >= 4 && current_stage <= 7)
+            select_sql = "select word from question_B order by random() limit 1";
+        else
+            select_sql = "select word from question_C order by random() limit 1";
         if(!sql_query.exec(select_sql))
         {
             qDebug()<<sql_query.lastError();
@@ -315,11 +278,10 @@ void Game::on_stage_comboBox_currentIndexChanged(int index)
                 current_word = sql_query.value(0).toString();
             }
         }
+
         ui->word_show_label->setText(current_word);
-
+        game_timer->start(1000);
         ready_timer->start(3000);
-
-        three_movie->start();
     }
     else {
         QMessageBox msbox;
@@ -328,40 +290,62 @@ void Game::on_stage_comboBox_currentIndexChanged(int index)
     }
 }
 
-void Game::handleTimeout()
-{
-    timer->stop();
-    ui->word_show_label->hide();
-    ui->word_input_line->show();
-    ui->commit_pushButton->show();
 
-}
-void Game::ready_handleTimeout()
-{
-    ready_timer->stop();
-    timer->start(5000);
-    ui->commit_pushButton->show();
-    ui->word_show_label->show();
-    ui->word_input_line->hide();
-    ui->commit_pushButton->hide();
-
-}
-
-//下一关界面
+//答案提交处理
 void Game::on_commit_pushButton_clicked()
 {
     QString in_word = ui->word_input_line->text();
     if(in_word == current_word)
     {
-        ui->next_pushButton->show();
+
         ui->word_input_line->hide();
         ui->commit_pushButton->hide();
-        player.ex++;
-        if(current_stage == player.level)
+
+        //实现不同关卡单词数目不同
+        if(current_stage <= 3)
         {
-            player.level++;
+            ui->next_pushButton->show();
+            game_timer->stop();
+            if(current_stage == player.level)
+            {
+                player.level++;
+            }
         }
-        update_user_info();
+
+        else if(current_stage >= 4 && current_stage <= 7)
+        {
+            if(i != 1)
+            {
+                on_stage_comboBox_currentIndexChanged(current_stage);
+                i++;
+            }
+            else{
+                ui->next_pushButton->show();
+                game_timer->stop();
+                if(current_stage == player.level)
+                {
+                    player.level++;
+
+                }
+            }
+        }
+        else
+        {
+            if(i != 2)
+            {
+                on_stage_comboBox_currentIndexChanged(current_stage);
+                i++;
+            }
+            else{
+                ui->next_pushButton->show();
+                game_timer->stop();
+                if(current_stage == player.level)
+                {
+                    player.level++;
+
+                }
+            }
+        }
     }
 
     else{
@@ -370,18 +354,22 @@ void Game::on_commit_pushButton_clicked()
         msbox.exec();
         game_init();
     }
+    update_user_info();
 }
 
 
-
+//下一关按钮槽函数
 void Game::on_next_pushButton_clicked()
 {
-    if(player.level < current_stage)
-        player.level = current_stage;
+    i = 0;
+    player.ex = player.ex + current_stage * 10 - t * 2;
+    t = 0;
     current_stage++;
     on_stage_comboBox_currentIndexChanged(current_stage);
+    update_user_info();
 }
 
+//出题界面
 void Game::on_question_commit_pushButton_clicked()
 {
     QSqlQuery sql_query(database);
@@ -422,7 +410,102 @@ void Game::on_question_commit_pushButton_clicked()
     update_user_info();
 }
 
+//注销操作
+void Game::on_unlogin_pushButton_clicked()
+{
+    model = -1;
+    update_user_info();
+}
+
+//返回操作
 void Game::on_re_pushButton_clicked()
 {
     game_init();
+}
+
+//更新用户信息框数据
+void Game::on_update_pushButton_clicked()
+{
+    update_user_info();
+}
+
+void Game::mousePressEvent(QMouseEvent *event)
+{
+    // 只响应左键
+    if (event->button() == Qt::LeftButton)
+    {
+        m_dragging = true;
+        m_startPosition = event->globalPos();
+        m_framePosition = frameGeometry().topLeft();
+    }
+
+    QWidget::mousePressEvent(event);
+}
+
+void Game::mouseMoveEvent(QMouseEvent *event)
+{
+    // 只响应左键
+    if (event->buttons() & Qt::LeftButton)
+    {
+        if(m_dragging)
+        {
+            // delta 相对偏移量,
+            QPoint delta = event->globalPos() - m_startPosition;
+
+            // 新位置：窗体原始位置  + 偏移量
+            move(m_framePosition + delta);
+        }
+    }
+
+    QWidget::mouseMoveEvent(event);
+}
+
+void Game::mouseReleaseEvent ( QMouseEvent * event )
+{
+    // 结束dragging
+    m_dragging = false;
+    QWidget::mouseReleaseEvent(event);
+}
+
+//定时器超时处理槽函数
+void Game::handleTimeout()
+{
+    timer->stop();
+    ui->tip_label->hide();
+    ui->word_show_label->hide();
+    ui->word_input_line->show();
+    ui->commit_pushButton->show();
+
+}
+void Game::ready_handleTimeout()
+{
+    ready_timer->stop();
+    ui->ready_label->hide();
+    ui->tip_label->show();
+    //实现不同关卡时间不同
+    timer->start(5000 - (current_stage * 200));
+    ui->commit_pushButton->show();
+    ui->word_show_label->show();
+    ui->word_input_line->hide();
+    ui->commit_pushButton->hide();
+}
+
+void Game::game_handleTimeout()
+{
+    t++;
+}
+
+void Game::total_handleTimeout()
+{
+    all_time++;
+    if(all_time / 600)
+    {
+        QMessageBox msbox;
+        msbox.setText("请休息一会儿吧");
+        msbox.exec();
+    }
+}
+Game::~Game()
+{
+    delete ui;
 }

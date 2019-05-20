@@ -8,6 +8,7 @@ Login::Login(QWidget *parent) :
     ui(new Ui::Login)
 {
     ui->setupUi(this);
+
 }
 
 Login::~Login()
@@ -68,6 +69,8 @@ void Login::on_pushButton_login_clicked()
                         questioner.ex = ex_t;
                         questioner.clas = class_t;
                     }
+                    ui->lineEdit_account->clear();
+                    ui->lineEdit_password->clear();
                     return;
                 }
                 msbox.setText("密码错误");

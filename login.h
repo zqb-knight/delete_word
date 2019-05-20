@@ -36,6 +36,7 @@ private slots:
 
 private:
     Ui::Login *ui;
+friend class Game;
 
 };
 

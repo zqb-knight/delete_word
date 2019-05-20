@@ -59,6 +59,8 @@ private slots:
 
     void handleTimeout();   //超时处理函数
     void ready_handleTimeout();
+    void game_handleTimeout();   //记录游戏时间
+    void total_handleTimeout();
 
     void on_commit_pushButton_clicked();
 
@@ -77,6 +79,7 @@ private:
 
     int current_stage;
     QString current_word;
+    int i, t, all_time;
 
     //实现窗口可整体拖动，重写鼠标事件函数
     bool m_dragging; // 是否正在拖动
@@ -86,9 +89,8 @@ private:
     //定时器
     QTimer *timer = new QTimer(this);
     QTimer *ready_timer = new QTimer(this);
-    //QFrame *frame = new QFrame;
-    QMovie* three_movie = new QMovie("3s.gif");
-
+    QTimer *game_timer = new QTimer(this);
+    QTimer *total_timer = new QTimer(this);
 };
 
 #endif // GAME_H

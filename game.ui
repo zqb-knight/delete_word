@@ -449,7 +449,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>150</x>
@@ -487,7 +487,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>462</x>
@@ -508,6 +508,83 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>200</y>
+     <width>161</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout9">
+    <item>
+     <widget class="QLabel" name="stage_L_label_2">
+      <property name="styleSheet">
+       <string notr="true">font: 20pt &quot;楷体&quot;;</string>
+      </property>
+      <property name="text">
+       <string>第</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="stage_M_label_2">
+      <property name="styleSheet">
+       <string notr="true">font: 20pt &quot;楷体&quot;;</string>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="stage_r_label_2">
+      <property name="styleSheet">
+       <string notr="true">font: 20pt &quot;楷体&quot;;</string>
+      </property>
+      <property name="text">
+       <string>关</string>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="ready_label">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>310</y>
+     <width>141</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 75 italic 30pt &quot;Times New Roman&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Ready</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="tip_label">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>330</y>
+     <width>251</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 75 28pt &quot;Agency FB&quot;;</string>
+   </property>
+   <property name="text">
+    <string>请记忆单词</string>
+   </property>
   </widget>
  </widget>
  <resources/>
