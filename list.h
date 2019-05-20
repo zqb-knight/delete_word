@@ -8,6 +8,8 @@
 #include <QtSql/QSqlQueryModel>
 #include <QDebug>
 
+extern QSqlDatabase database;
+
 namespace Ui {
 class List;
 }

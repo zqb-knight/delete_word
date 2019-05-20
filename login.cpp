@@ -30,7 +30,7 @@ void Login::on_pushButton_login_clicked()
     qDebug() << "输入的账户为：" << account << endl;
     qDebug() << "输入的密码为：" << password << endl;
 
-    QSqlQuery sql_query;
+    QSqlQuery sql_query(database);
     QString select_sql = "select Account, Password, Role, Level, Ex, Class from account";
     if(!sql_query.exec(select_sql))
     {
@@ -59,6 +59,14 @@ void Login::on_pushButton_login_clicked()
                         player.level = level_t;
                         player.ex = ex_t;
                         player.clas = class_t;
+                        //g->show();
+
+                    }
+                    else{
+                        questioner.name = account_t;
+                        questioner.question_number = level_t;
+                        questioner.ex = ex_t;
+                        questioner.clas = class_t;
                     }
                     return;
                 }
@@ -91,7 +99,7 @@ void Login::on_pushButton_register_clicked()
     qDebug() << "输入的密码为：" << password << endl;
 
     //判断账户是否已经存在
-    QSqlQuery sql_query;
+    QSqlQuery sql_query(database);
     QString select_sql = "select Account, Password, Role from account";
     if(!sql_query.exec(select_sql))
     {
@@ -121,7 +129,7 @@ void Login::on_pushButton_register_clicked()
     sql_query.addBindValue(account);
     sql_query.addBindValue(password);
     sql_query.addBindValue(role);
-    sql_query.addBindValue(0);
+    sql_query.addBindValue(1);
     sql_query.addBindValue(0);
     sql_query.addBindValue(0);
     if(!sql_query.exec())

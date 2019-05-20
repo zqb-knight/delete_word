@@ -7,6 +7,8 @@
 #include <QSqlQuery>
 #include <QDebug>
 
+extern QSqlDatabase database;
+
 namespace Ui {
 class Rank;
 }

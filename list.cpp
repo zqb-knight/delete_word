@@ -27,8 +27,8 @@ void List::sreach(int f)
     ui->tableWidget->clearContents();
     QString Roles;
     qDebug() << temp;
-    QSqlQuery sql_query;
     QString select_sql;
+    QSqlQuery sql_query(database);
     if(!f)
     {
         if(model == 0)

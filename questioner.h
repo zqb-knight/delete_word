@@ -7,8 +7,9 @@ class Questioner : public Person
 {
 public:
     Questioner();
-private:
     int question_number;    //出题数
+
+
 };
 
 #endif // QUESTIONER_H

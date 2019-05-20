@@ -24,7 +24,7 @@ void Rank::update_table(int role, int index)
     int i = 0;
     int model = index;      //排序方式，默认按照闯关数
     ui->tableWidget->clearContents();
-    QSqlQuery sql_query;
+    QSqlQuery sql_query(database);
     QString select_sql;
     if(model == 0)
         select_sql = "select Account, Role, Level, Ex, Class from account order by Level desc";
@@ -47,7 +47,6 @@ void Rank::update_table(int role, int index)
             int Level = sql_query.value(2).toInt();
             int Ex = sql_query.value(3).toInt();
             int clas = sql_query.value(4).toInt();
-            //int row = ui->tableWidget->rowCount();
             ui->tableWidget->insertRow(i);
             // id
             if(role == Roles)

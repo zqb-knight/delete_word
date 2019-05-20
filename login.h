@@ -10,9 +10,11 @@
 #include "player.h"
 #include "questioner.h"
 
+
 extern Player player;         //玩家
 extern Questioner questioner; //出题者
 extern int model;     //此时的模式，0代表玩家模式，1代表出题模式，-1代表未登录模式
+extern QSqlDatabase database;
 
 namespace Ui {
 class Login;

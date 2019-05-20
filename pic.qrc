@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>3s.gif</file>
+        <file>touxiang.png</file>
+        <file>back.png</file>
+    </qresource>
+</RCC>
